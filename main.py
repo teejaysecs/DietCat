@@ -25,14 +25,14 @@ client = genai.Client(api_key=api_key) if api_key else None
 @app.route('/')
 def index():
     return render_template('index.html')
-
-@app.route('/categorize', bytes_methods=['POST'])
+@app.route('/api/categorize', methods=['POST']) # Added /api here
 def categorize():
     try:
-        # Check if the compiled backend file even exists
         if not os.path.exists(BINARY_PATH):
             return jsonify({"error": f"Backend binary not found at {os.path.basename(BINARY_PATH)}"}), 500
-
+        
+        age = request.form.get('age')
+        # ... rest of your code remains the same ...
         # Get age from the frontend form
         age = request.form.get('age')
         if not age:
