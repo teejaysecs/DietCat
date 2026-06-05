@@ -7,38 +7,33 @@ from google.genai import types
 
 app = Flask(__name__)
 
-# 1. SMART PATH DETECTION (Fixes the "app.exe not found" error on Render)
+# 1. SMART PATH DETECTION (Finds 'app' on Render, 'app.exe' on Windows)
 if platform.system() == "Windows":
     BINARY_PATH = os.path.join(os.path.dirname(__file__), "app.exe")
 else:
-    # On Render (Linux), there is no .exe extension
     BINARY_PATH = os.path.join(os.path.dirname(__file__), "app")
-    # Give the Linux binary execution permissions just in case
     if os.path.exists(BINARY_PATH):
         os.chmod(BINARY_PATH, 0o755)
 
 # 2. INITIALIZE GEMINI CLIENT
-# Make sure you have added GEMINI_API_KEY to your Render Environment Variables!
 api_key = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key) if api_key else None
 
 @app.route('/')
 def index():
     return render_template('index.html')
-@app.route('/api/categorize', methods=['POST']) # Added /api here
+
+@app.route('/api/categorize', methods=['POST'])
 def categorize():
     try:
         if not os.path.exists(BINARY_PATH):
             return jsonify({"error": f"Backend binary not found at {os.path.basename(BINARY_PATH)}"}), 500
-        
-        age = request.form.get('age')
-        # ... rest of your code remains the same ...
-        # Get age from the frontend form
+
         age = request.form.get('age')
         if not age:
             return jsonify({"error": "Age is required"}), 400
 
-        # Run your compiled C++ application as a subprocess
+        # THIS IS THE MISSING LOGIC: Running the C++ backend subprocess
         process = subprocess.run(
             [BINARY_PATH, str(age)],
             capture_output=True,
@@ -46,9 +41,13 @@ def categorize():
             check=True
         )
         
-        # Grab the stdout text outputted from your C++ program
         category = process.stdout.strip()
-        return jsonify({"category": category})
+        
+        # Returns BOTH "category" and "result" keys so it satisfies any frontend layout
+        return jsonify({
+            "category": category,
+            "result": category
+        })
 
     except subprocess.CalledProcessError as e:
         return jsonify({"error": f"C++ Backend Error: {e.stderr}"}), 500
@@ -62,11 +61,10 @@ def generate_diet():
 
     try:
         category = request.form.get('category')
-        goal = request.form.get('goal') # e.g., lose weight, build muscle
+        goal = request.form.get('goal')
         
         prompt = f"Create a simple, healthy 1-day meal plan for a person categorized as '{category}' whose fitness goal is to '{goal}'."
         
-        # Using the updated 2026 google-genai SDK layout
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt,
@@ -77,5 +75,4 @@ def generate_diet():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Default local port for testing
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
