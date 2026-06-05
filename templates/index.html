@@ -3,176 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DietCat - Age Categorizer & AI Diet Planner</title>
+    <title>DietCat - Personal Health Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-50 font-sans min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-8 border border-gray-100">
+    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-8 border border-slate-100">
         
-        <div class="flex border-b border-gray-200 mb-8">
-            <button id="tab-categorizer" class="w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none">
+        <div class="flex border-b border-slate-200 mb-8">
+            <button id="tab-categorizer" class="w-1/2 pb-4 text-center font-bold text-emerald-600 border-b-2 border-emerald-500 focus:outline-none">
                 Age Categorizer
             </button>
-            <button id="tab-diet" class="w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none">
+            <button id="tab-diet" class="w-1/2 pb-4 text-center font-bold text-slate-400 hover:text-slate-600 focus:outline-none">
                 AI Diet Planner
             </button>
         </div>
 
         <div id="section-categorizer" class="block">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Check Your Age Category</h2>
-            <p class="text-gray-500 mb-6">Enter an age to classify it using our C++ backend.</p>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Check Your Age Category</h2>
+            <p class="text-slate-500 mb-6">Enter your details to classify your age using our C++ engine.</p>
             
             <form id="categorizer-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Enter Age (0-60):</label>
-                    <input type="number" id="age-input" name="age" min="0" max="60" required 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Your Name:</label>
+                    <input type="text" id="cat-name-input" name="name" required placeholder="e.g., Alex"
+                           class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Enter Age (0-60):</label>
+                    <input type="number" id="age-input" name="age" min="0" max="60" required placeholder="e.g., 25"
+                           class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
                 </div>
                 
                 <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-md shadow-emerald-100">
-                    Check Category
+                    Analyze Profile
                 </button>
             </form>
 
-            <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <span class="text-gray-600 font-medium">Your Category:</span>
-                <span id="category-output" class="ml-2 font-bold text-gray-400">Not checked yet</span>
+            <div class="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                <span class="text-slate-600 font-medium">Result Profile:</span>
+                <span id="category-output" class="font-bold text-slate-400">Waiting for input...</span>
             </div>
         </div>
 
         <div id="section-diet" class="hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">AI Diet Planner</h2>
-            <p class="text-gray-500 mb-6">Generate a custom 1-day meal plan based on your category and fitness goals.</p>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">AI Diet Planner</h2>
+            <p class="text-slate-500 mb-6">Generate your personalized graphic meal board.</p>
             
             <form id="diet-form" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Name:</label>
+                        <input type="text" id="diet-name-input" name="name" required placeholder="Alex"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Age:</label>
+                        <input type="number" id="diet-age-input" name="age" min="0" max="60" required placeholder="25"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
+                    </div>
+                </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fitness Goal:</label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Fitness Goal:</label>
                     <select id="goal-input" name="goal" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+                            class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition">
                         <option value="Lose Weight">Lose Weight</option>
                         <option value="Build Muscle">Build Muscle</option>
-                        <option value="Stay Healthy / Maintain">Stay Healthy / Maintain</option>
+                        <option value="Stay Healthy">Stay Healthy / Maintain</option>
                     </select>
                 </div>
                 
                 <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-md shadow-emerald-100">
-                    Generate Diet Plan
+                    Generate Visual Diet Graphic
                 </button>
             </form>
 
-            <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <h3 class="text-gray-700 font-semibold mb-2">Your Custom Plan:</h3>
-                <div id="diet-output" class="text-gray-600 whitespace-pre-line leading-relaxed text-sm">
-                    Your generated diet plan will appear here...
+            <div id="graphic-diet-container" class="mt-8 hidden">
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 text-white shadow-lg mb-6">
+                    <h3 id="graphic-user-title" class="text-xl font-bold">Diet Plan Dashboard</h3>
+                    <p id="graphic-user-meta" class="text-emerald-100 text-sm mt-1"></p>
                 </div>
+                
+                <div class="space-y-4" id="meal-cards-wrapper">
+                    </div>
+            </div>
+            
+            <div id="diet-status-msg" class="mt-6 text-center font-medium text-slate-500">
+                Your graphic schedule will generate here...
             </div>
         </div>
 
     </div>
 
     <script>
-        // Tab switching setup
+        // Tab Layout switches
         const tabCategorizer = document.getElementById('tab-categorizer');
         const tabDiet = document.getElementById('tab-diet');
         const sectionCategorizer = document.getElementById('section-categorizer');
         const sectionDiet = document.getElementById('section-diet');
 
-        let verifiedCategory = ""; // Tracks category globally for the diet planner
-
         tabCategorizer.addEventListener('click', () => {
-            tabCategorizer.className = "w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none";
-            tabDiet.className = "w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none";
+            tabCategorizer.className = "w-1/2 pb-4 text-center font-bold text-emerald-600 border-b-2 border-emerald-500 focus:outline-none";
+            tabDiet.className = "w-1/2 pb-4 text-center font-bold text-slate-400 hover:text-slate-600 focus:outline-none";
             sectionCategorizer.className = "block";
             sectionDiet.className = "hidden";
         });
 
         tabDiet.addEventListener('click', () => {
-            tabDiet.className = "w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none";
-            tabCategorizer.className = "w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none";
+            tabDiet.className = "w-1/2 pb-4 text-center font-bold text-emerald-600 border-b-2 border-emerald-500 focus:outline-none";
+            tabCategorizer.className = "w-1/2 pb-4 text-center font-bold text-slate-400 hover:text-slate-600 focus:outline-none";
             sectionDiet.className = "block";
             sectionCategorizer.className = "hidden";
         });
 
-        // FIX 1: Age Categorizer Submission (Relative Path & Exact JSON Match)
+        // 1. Submit Profile to C++ Backend
         document.getElementById('categorizer-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const ageInput = document.getElementById('age-input').value;
+            const name = document.getElementById('cat-name-input').value;
+            const age = document.getElementById('age-input').value;
             const outputSpan = document.getElementById('category-output');
             
-            outputSpan.innerText = "Processing...";
-            outputSpan.className = "ml-2 font-bold text-amber-500";
+            outputSpan.innerText = "Analyzing...";
+            outputSpan.className = "font-bold text-amber-500 animate-pulse";
 
             const formData = new FormData();
-            formData.append('age', ageInput);
+            formData.append('age', age);
 
-            // Using relative URL so it auto-targets Render when deployed
-            fetch('/api/categorize', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Server error or binary execution failed");
-                return response.json();
-            })
+            fetch('/api/categorize', { method: 'POST', body: formData })
+            .then(res => res.json())
             .then(data => {
-                // Supports both potential key shapes to avoid 'undefined'
-                const categoryResult = data.category || data.result;
-                
-                if (categoryResult) {
-                    verifiedCategory = categoryResult; // Save it for the diet tab
-                    outputSpan.innerText = categoryResult;
-                    outputSpan.className = "ml-2 font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded";
-                } else if (data.error) {
-                    outputSpan.innerText = "Error: " + data.error;
-                    outputSpan.className = "ml-2 font-bold text-red-500";
+                const finalCat = data.category || data.result;
+                if (finalCat) {
+                    outputSpan.innerText = `${name}: ${finalCat}`;
+                    outputSpan.className = "font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200";
+                    
+                    // Auto fill the info inside target diet planner inputs
+                    document.getElementById('diet-name-input').value = name;
+                    document.getElementById('diet-age-input').value = age;
                 }
             })
-            .catch(err => {
-                outputSpan.innerText = "Connection Error";
-                outputSpan.className = "ml-2 font-bold text-red-500";
-                console.error(err);
+            .catch(() => {
+                outputSpan.innerText = "Execution failed";
+                outputSpan.className = "font-bold text-red-500";
             });
         });
 
-        // FIX 2: AI Diet Planner Submission (Relative Path & Fallback Logic)
+        // 2. Submit Info to AI Planner and Generate Graphic Cards
         document.getElementById('diet-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const goalInput = document.getElementById('goal-input').value;
-            const dietOutput = document.getElementById('diet-output');
+            const name = document.getElementById('diet-name-input').value;
+            const age = document.getElementById('diet-age-input').value;
+            const goal = document.getElementById('goal-input').value;
+            const statusMsg = document.getElementById('diet-status-msg');
+            const graphicContainer = document.getElementById('graphic-diet-container');
+            const cardsWrapper = document.getElementById('meal-cards-wrapper');
 
-            if (!verifiedCategory) {
-                dietOutput.innerHTML = "<span class='text-red-500 font-semibold'>⚠️ Please run the Age Categorizer tab first to identify your category!</span>";
-                return;
-            }
+            statusMsg.innerText = "Building Visual Dashboard Chart...";
+            graphicContainer.classList.add('hidden');
 
-            dietOutput.innerText = "Formulating your meal plan via Gemini AI...";
-            
             const formData = new FormData();
-            formData.append('category', verifiedCategory);
-            formData.append('goal', goalInput);
+            formData.append('name', name);
+            formData.append('age', age);
+            formData.append('goal', goal);
 
-            // Using relative URL to bypass local Network Errors
-            fetch('/generate_diet', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("API Key issue or server route failure");
-                return response.json();
-            })
+            fetch('/generate_diet', { method: 'POST', body: formData })
+            .then(res => res.json())
             .then(data => {
                 if (data.diet_plan) {
-                    dietOutput.innerText = data.diet_plan;
-                } else if (data.error) {
-                    dietOutput.innerHTML = `<span class='text-red-500'>Error: ${data.error}</span>`;
+                    statusMsg.classList.add('hidden');
+                    graphicContainer.classList.remove('hidden');
+                    
+                    document.getElementById('graphic-user-title').innerText = `Diet Plan Chart for ${name}`;
+                    document.getElementById('graphic-user-meta').innerText = `Age Profile: ${age} years old | Goal: ${goal}`;
+                    
+                    // Render layout dynamically
+                    cardsWrapper.innerHTML = `
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+                            <span class="inline-block text-xs font-bold uppercase tracking-wide bg-amber-500 text-white px-2 py-0.5 rounded mb-2">Meal Matrix Target</span>
+                            <div class="text-slate-700 font-medium whitespace-pre-line">${data.diet_plan}</div>
+                        </div>
+                    `;
+                } else {
+                    statusMsg.innerText = "Error: " + data.error;
                 }
             })
-            .catch(err => {
-                dietOutput.innerHTML = "<span class='text-red-500'>Network Error: Could not connect to Render backend.</span>";
-                console.error(err);
+            .catch(() => {
+                statusMsg.innerText = "Network link lost. Please check configuration.";
             });
         });
     </script>

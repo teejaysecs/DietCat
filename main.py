@@ -3,11 +3,10 @@ import platform
 import subprocess
 from flask import Flask, render_template, request, jsonify
 from google import genai
-from google.genai import types
 
 app = Flask(__name__)
 
-# 1. SMART PATH DETECTION (Finds 'app' on Render, 'app.exe' on Windows)
+# System Architecture Verification
 if platform.system() == "Windows":
     BINARY_PATH = os.path.join(os.path.dirname(__file__), "app.exe")
 else:
@@ -15,7 +14,6 @@ else:
     if os.path.exists(BINARY_PATH):
         os.chmod(BINARY_PATH, 0o755)
 
-# 2. INITIALIZE GEMINI CLIENT
 api_key = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key) if api_key else None
 
@@ -27,43 +25,49 @@ def index():
 def categorize():
     try:
         if not os.path.exists(BINARY_PATH):
-            return jsonify({"error": f"Backend binary not found at {os.path.basename(BINARY_PATH)}"}), 500
+            return jsonify({"error": "Backend binary engine missing"}), 500
 
         age = request.form.get('age')
         if not age:
-            return jsonify({"error": "Age is required"}), 400
+            return jsonify({"error": "Age metrics required"}), 400
 
-        # THIS IS THE MISSING LOGIC: Running the C++ backend subprocess
         process = subprocess.run(
             [BINARY_PATH, str(age)],
             capture_output=True,
             text=True,
             check=True
         )
-        
         category = process.stdout.strip()
         
-        # Returns BOTH "category" and "result" keys so it satisfies any frontend layout
         return jsonify({
             "category": category,
             "result": category
         })
-
-    except subprocess.CalledProcessError as e:
-        return jsonify({"error": f"C++ Backend Error: {e.stderr}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/generate_diet', methods=['POST'])
 def generate_diet():
     if not client:
-        return jsonify({"error": "Gemini API key is missing. Please set GEMINI_API_KEY in Render."}), 500
+        return jsonify({"error": "API Authentication Key configuration error"}), 500
 
     try:
-        category = request.form.get('category')
-        goal = request.form.get('goal')
+        name = request.form.get('name', 'User')
+        age = request.form.get('age', 'Unspecified')
+        goal = request.form.get('goal', 'General Health')
         
-        prompt = f"Create a simple, healthy 1-day meal plan for a person categorized as '{category}' whose fitness goal is to '{goal}'."
+        # Pull down category inference engine locally using system fallback
+        category = "Standard Profile"
+        if os.path.exists(BINARY_PATH) and age.isdigit():
+            res = subprocess.run([BINARY_PATH, str(age)], capture_output=True, text=True)
+            if res.returncode == 0:
+                category = res.stdout.strip()
+
+        # Build prompt requiring structural markdown elements
+        prompt = (
+            f"Generate a brief 1-day meal plan recommendation structured with distinct breakfast, lunch, "
+            f"and dinner headers for {name}, a {age}-year-old categorized as '{category}' seeking to '{goal}'."
+        )
         
         response = client.models.generate_content(
             model='gemini-2.5-flash',
