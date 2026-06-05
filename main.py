@@ -22,6 +22,18 @@ if api_key:
 else:
     client = None
 
+def get_executable_path():
+    """Helper function to find the right binary for Linux or Windows"""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Render (Linux) will use 'app', Windows will fallback to 'app.exe'
+    linux_path = os.path.join(base_dir, 'app')
+    windows_path = os.path.join(base_dir, 'app.exe')
+    
+    if os.path.exists(linux_path):
+        return linux_path
+    return windows_path
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -32,11 +44,10 @@ def categorize_only():
         data = request.json
         age = data.get('age', '0')
         
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        app_path = os.path.join(base_dir, 'app.exe')
+        app_path = get_executable_path()
         
         if not os.path.exists(app_path):
-            return jsonify({"category": "Error: app.exe not found"})
+            return jsonify({"category": f"Error: Executable file not found at {os.path.basename(app_path)}"})
 
         result = subprocess.run([app_path, str(age)], capture_output=True, text=True, timeout=5)
         category = result.stdout.strip()
@@ -56,8 +67,7 @@ def get_plan():
         age = data.get('age', '0')
         focus = data.get('focus', 'General Balanced Diet')
 
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        app_path = os.path.join(base_dir, 'app.exe')
+        app_path = get_executable_path()
 
         category = "Youth"
         if os.path.exists(app_path):
@@ -81,7 +91,6 @@ def get_plan():
             "Do not write any introductory or concluding text. Do not wrap in markdown tags. Output raw JSON only."
         )
 
-        # Using the standard modern 'gemini-2.5-flash' model layout
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt,
