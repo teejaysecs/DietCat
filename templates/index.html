@@ -3,231 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Health & Diet Dashboard</title>
-    <style>
-        :root {
-            --primary: #2ecc71;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --shadow: 0 4px 15px rgba(0,0,0,0.05);
-            --danger: #e74c3c;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f3f4; margin: 0; padding: 40px; color: var(--dark); }
-        .container { max-width: 800px; background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); margin: 0 auto; }
-        
-        /* Navigation Tabs */
-        .menu-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--light); padding: 5px; border-radius: 8px; }
-        .tab-btn { flex: 1; padding: 12px; background: none; border: none; font-size: 15px; font-weight: 600; color: #7f8c8d; cursor: pointer; border-radius: 6px; transition: 0.2s; }
-        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        
-        .app-section { display: none; }
-        .app-section.active { display: block; }
-        
-        /* Form Elements */
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; box-sizing: border-box; font-size: 14px; transition: 0.2s; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
-        
-        .submit-btn { background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2); }
-        .submit-btn:hover { background: #27ae60; }
-
-        /* Graphics Layout */
-        .result-card { margin-top: 30px; background: var(--light); border-radius: 12px; padding: 25px; border: 1px solid #e2e8f0; display: none; }
-        .badge { background: #e8f8f0; color: var(--primary); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        
-        /* Error Message Box (Replaces alerts) */
-        .error-box { background: #fdf2f2; color: var(--danger); border: 1px solid #f8b4b4; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; font-weight: 600; }
-
-        /* Weekday Grid Navigation */
-        .days-nav { display: flex; gap: 5px; margin: 20px 0; overflow-x: auto; padding-bottom: 5px; }
-        .day-tab { padding: 8px 14px; background: #e2e8f0; border: none; border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; transition: 0.2s; }
-        .day-tab.active { background: var(--primary); color: white; }
-
-        /* Grid Layout Cards */
-        .meal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-        .meal-card { background: white; padding: 18px; border-radius: 10px; border-left: 4px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .meal-time { font-size: 12px; text-transform: uppercase; color: #95a5a6; font-weight: bold; letter-spacing: 1px; }
-        .meal-name { font-size: 15px; font-weight: 600; margin: 5px 0 0 0; color: var(--dark); }
-    </style>
+    <title>DietCat - Age Categorizer & AI Diet Planner</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
+<body class="bg-gray-50 font-sans min-h-screen flex items-center justify-center p-4">
 
-<div class="container">
-    <div class="menu-tabs">
-        <button class="tab-btn active" onclick="switchTab('categorizer')">Age Categorizer</button>
-        <button class="tab-btn" onclick="switchTab('diet')">AI Diet Planner</button>
-    </div>
-
-    <!-- Tab 1: Age Categorizer -->
-    <div id="categorizer" class="app-section active">
-        <h2>Check Your Age Category</h2>
-        <form id="categorizerForm">
-            <div class="form-group">
-                <label>Enter Age (0-60):</label>
-                <input type="text" id="catAge" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 25" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) > 60) this.value = 60;" required>
-            </div>
-            <button type="submit" class="submit-btn">Check Category</button>
-        </form>
-        <div id="catResultBox" class="result-card">
-            <p>Your Category: <span class="badge" id="catResultText"></span></p>
+    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-8 border border-gray-100">
+        
+        <div class="flex border-b border-gray-200 mb-8">
+            <button id="tab-categorizer" class="w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none">
+                Age Categorizer
+            </button>
+            <button id="tab-diet" class="w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none">
+                AI Diet Planner
+            </button>
         </div>
-    </div>
 
-    <!-- Tab 2: AI Diet Planner -->
-    <div id="diet" class="app-section">
-        <h2>Personalized AI Diet Planner</h2>
-        <form id="plannerForm">
-            <div class="form-group"><label>Name:</label><input type="text" id="name" required></div>
-            <div class="form-group">
-                <label>Age (0-60):</label>
-                <input type="text" id="dietAge" inputmode="numeric" pattern="[0-9]*" placeholder="e.g. 35" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(parseInt(this.value) > 60) this.value = 60;" required>
-            </div>
-            <div class="form-group">
-                <label>Health Focus:</label>
-                <select id="focus">
-                    <option value="General Balanced Diet">General Balanced Diet</option>
-                    <option value="Iron Deficiency (Anemia)">Iron Deficiency (Anemia)</option>
-                    <option value="Vitamin D & Calcium Boost">Vitamin D & Calcium Boost</option>
-                    <option value="High Protein for Muscle Development">High Protein Development</option>
-                </select>
-            </div>
-            <button type="submit" class="submit-btn">Generate UI Graphical Plan</button>
-        </form>
-
-        <!-- Error box for user-friendly notifications -->
-        <div id="errorBox" class="error-box"></div>
-
-        <!-- Graphical Results Presentation -->
-        <div id="dietResultBox" class="result-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3>Diet Dashboard for <span id="resName" style="color:var(--primary)"></span></h3>
-                <span class="badge" id="resCategory"></span>
-            </div>
+        <div id="section-categorizer" class="block">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Check Your Age Category</h2>
+            <p class="text-gray-500 mb-6">Enter an age to classify it using our C++ backend.</p>
             
-            <p id="loadingMsg" style="color: #7f8c8d; font-style: italic; display:none;">AI is compiling your calendar dashboard layout...</p>
-            
-            <div id="dashboardContent" style="display:none;">
-                <div class="days-nav" id="daysNavContainer"></div>
-                <div class="meal-grid" id="mealGridContainer"></div>
+            <form id="categorizer-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Enter Age (0-60):</label>
+                    <input type="number" id="age-input" name="age" min="0" max="60" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+                </div>
+                
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-md shadow-emerald-100">
+                    Check Category
+                </button>
+            </form>
+
+            <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <span class="text-gray-600 font-medium">Your Category:</span>
+                <span id="category-output" class="ml-2 font-bold text-gray-400">Not checked yet</span>
             </div>
         </div>
+
+        <div id="section-diet" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">AI Diet Planner</h2>
+            <p class="text-gray-500 mb-6">Generate a custom 1-day meal plan based on your category and fitness goals.</p>
+            
+            <form id="diet-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fitness Goal:</label>
+                    <select id="goal-input" name="goal" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition">
+                        <option value="Lose Weight">Lose Weight</option>
+                        <option value="Build Muscle">Build Muscle</option>
+                        <option value="Stay Healthy / Maintain">Stay Healthy / Maintain</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition shadow-md shadow-emerald-100">
+                    Generate Diet Plan
+                </button>
+            </form>
+
+            <div class="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <h3 class="text-gray-700 font-semibold mb-2">Your Custom Plan:</h3>
+                <div id="diet-output" class="text-gray-600 whitespace-pre-line leading-relaxed text-sm">
+                    Your generated diet plan will appear here...
+                </div>
+            </div>
+        </div>
+
     </div>
-</div>
 
-<script>
-    let globalMealPlanData = null;
+    <script>
+        // Tab switching setup
+        const tabCategorizer = document.getElementById('tab-categorizer');
+        const tabDiet = document.getElementById('tab-diet');
+        const sectionCategorizer = document.getElementById('section-categorizer');
+        const sectionDiet = document.getElementById('section-diet');
 
-    function switchTab(tabId) {
-        document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        hideError();
-    }
+        let verifiedCategory = ""; // Tracks category globally for the diet planner
 
-    function showError(msg) {
-        const errBox = document.getElementById('errorBox');
-        errBox.innerText = msg;
-        errBox.style.display = 'block';
-        document.getElementById('loadingMsg').style.display = 'none';
-    }
+        tabCategorizer.addEventListener('click', () => {
+            tabCategorizer.className = "w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none";
+            tabDiet.className = "w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none";
+            sectionCategorizer.className = "block";
+            sectionDiet.className = "hidden";
+        });
 
-    function hideError() {
-        document.getElementById('errorBox').style.display = 'none';
-    }
+        tabDiet.addEventListener('click', () => {
+            tabDiet.className = "w-1/2 pb-4 text-center font-semibold text-green-600 border-b-2 border-green-500 focus:outline-none";
+            tabCategorizer.className = "w-1/2 pb-4 text-center font-semibold text-gray-400 hover:text-gray-600 focus:outline-none";
+            sectionDiet.className = "block";
+            sectionCategorizer.className = "hidden";
+        });
 
-    // Tab 1 logic
-    document.getElementById('categorizerForm').onsubmit = async (e) => {
-        e.preventDefault();
-        hideError();
-        try {
-            const response = await fetch('/api/categorize', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ age: document.getElementById('catAge').value })
-            });
-            const result = await response.json();
-            document.getElementById('catResultText').innerText = result.category;
-            document.getElementById('catResultBox').style.display = 'block';
-        } catch(err) {
-            showError("Could not reach backend to categorize age. Make sure your server is running!");
-        }
-    };
-
-    // Tab 2 logic
-    document.getElementById('plannerForm').onsubmit = async (e) => {
-        e.preventDefault();
-        hideError();
-        document.getElementById('loadingMsg').style.display = 'block';
-        document.getElementById('dashboardContent').style.display = 'none';
-        document.getElementById('dietResultBox').style.display = 'block';
-
-        const data = {
-            name: document.getElementById('name').value,
-            age: document.getElementById('dietAge').value,
-            focus: document.getElementById('focus').value
-        };
-
-        try {
-            const response = await fetch('/api/plan', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
+        // FIX 1: Age Categorizer Submission (Relative Path & Exact JSON Match)
+        document.getElementById('categorizer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const result = await response.json();
-            document.getElementById('loadingMsg').style.display = 'none';
+            const ageInput = document.getElementById('age-input').value;
+            const outputSpan = document.getElementById('category-output');
             
-            if(result.error) {
-                showError(result.error);
+            outputSpan.innerText = "Processing...";
+            outputSpan.className = "ml-2 font-bold text-amber-500";
+
+            const formData = new FormData();
+            formData.append('age', ageInput);
+
+            // Using relative URL so it auto-targets Render when deployed
+            fetch('/api/categorize', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Server error or binary execution failed");
+                return response.json();
+            })
+            .then(data => {
+                // Supports both potential key shapes to avoid 'undefined'
+                const categoryResult = data.category || data.result;
+                
+                if (categoryResult) {
+                    verifiedCategory = categoryResult; // Save it for the diet tab
+                    outputSpan.innerText = categoryResult;
+                    outputSpan.className = "ml-2 font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded";
+                } else if (data.error) {
+                    outputSpan.innerText = "Error: " + data.error;
+                    outputSpan.className = "ml-2 font-bold text-red-500";
+                }
+            })
+            .catch(err => {
+                outputSpan.innerText = "Connection Error";
+                outputSpan.className = "ml-2 font-bold text-red-500";
+                console.error(err);
+            });
+        });
+
+        // FIX 2: AI Diet Planner Submission (Relative Path & Fallback Logic)
+        document.getElementById('diet-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const goalInput = document.getElementById('goal-input').value;
+            const dietOutput = document.getElementById('diet-output');
+
+            if (!verifiedCategory) {
+                dietOutput.innerHTML = "<span class='text-red-500 font-semibold'>⚠️ Please run the Age Categorizer tab first to identify your category!</span>";
                 return;
             }
 
-            document.getElementById('resName').innerText = data.name;
-            document.getElementById('resCategory').innerText = result.category;
+            dietOutput.innerText = "Formulating your meal plan via Gemini AI...";
             
-            globalMealPlanData = result.meal_plan;
-            renderDaysMenu();
-            showDayMeals(Object.keys(globalMealPlanData)[0]); // Set Monday default tab view active
-            document.getElementById('dashboardContent').style.display = 'block';
-        } catch(err) {
-            showError("Network Error: Could not connect to the server. Check your command prompt console!");
-        }
-    };
+            const formData = new FormData();
+            formData.append('category', verifiedCategory);
+            formData.append('goal', goalInput);
 
-    function renderDaysMenu() {
-        const container = document.getElementById('daysNavContainer');
-        container.innerHTML = '';
-        Object.keys(globalMealPlanData).forEach((day, index) => {
-            const btn = document.createElement('button');
-            btn.className = `day-tab ${index === 0 ? 'active' : ''}`;
-            btn.innerText = day;
-            btn.onclick = (e) => {
-                document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                showDayMeals(day);
-            };
-            container.appendChild(btn);
+            // Using relative URL to bypass local Network Errors
+            fetch('/generate_diet', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("API Key issue or server route failure");
+                return response.json();
+            })
+            .then(data => {
+                if (data.diet_plan) {
+                    dietOutput.innerText = data.diet_plan;
+                } else if (data.error) {
+                    dietOutput.innerHTML = `<span class='text-red-500'>Error: ${data.error}</span>`;
+                }
+            })
+            .catch(err => {
+                dietOutput.innerHTML = "<span class='text-red-500'>Network Error: Could not connect to Render backend.</span>";
+                console.error(err);
+            });
         });
-    }
-
-    function showDayMeals(day) {
-        const container = document.getElementById('mealGridContainer');
-        container.innerHTML = '';
-        const dayMeals = globalMealPlanData[day];
-        
-        const periods = ['Morning', 'Afternoon', 'Night'];
-        periods.forEach(period => {
-            const card = document.createElement('div');
-            card.className = 'meal-card';
-            card.innerHTML = `
-                <div class="meal-time">${period}</div>
-                <p class="meal-name">${dayMeals[period] || 'Balanced Selection'}</p>
-            `;
-            container.appendChild(card);
-        });
-    }
-</script>
+    </script>
 </body>
 </html>
