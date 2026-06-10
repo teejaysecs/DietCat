@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    // If the web app forgot to pass an age, stop early
     if (argc < 2) {
         printf("No Age Provided");
         return 1;
@@ -11,7 +10,7 @@ int main(int argc, char *argv[]) {
     // This converts the age sent by the web app into a usable number
     int age = atoi(argv[1]);
 
-    // Your original checking logic
+    // checking logic
     if (age >= 0 && age <= 12) {
         printf("Child");
     } else if (age >= 13 && age <= 19) {
